@@ -16,8 +16,7 @@ application {
     mainClassName = 'com.kafka.stream.Main'
 }
 
-
-task(runStreams, dependsOn: 'classes', type: JavaExec) {
-   main = 'com.kafka.stream.StreamsMain'
+task(runAggregations, dependsOn: 'classes', type: JavaExec) {
+   main = 'com.kafka.stream.AggregationsMain'
    classpath = sourceSets.main.runtimeClasspath
 }
