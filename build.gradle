@@ -1,0 +1,23 @@
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    implementation 'org.apache.kafka:kafka-streams:2.5.0'
+    implementation 'org.apache.kafka:kafka-clients:2.5.0'
+}
+
+application {
+    mainClassName = 'com.kafka.stream.Main'
+}
+
+
+task(runStreams, dependsOn: 'classes', type: JavaExec) {
+   main = 'com.kafka.stream.StreamsMain'
+   classpath = sourceSets.main.runtimeClasspath
+}
