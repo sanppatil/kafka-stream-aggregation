@@ -11,15 +11,13 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KGroupedStream;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Produced;
 
-public class CountStreams {
+public class ReduceStreams {
 
 	public static void main(String[] args) {
 		// Set up the configuration.
 		final Properties props = new Properties();
-		props.put(StreamsConfig.APPLICATION_ID_CONFIG, "count-streams");
+		props.put(StreamsConfig.APPLICATION_ID_CONFIG, "reduce-streams");
 		props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
 		props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
 		// Set the default Serdes to String.
@@ -28,15 +26,16 @@ public class CountStreams {
 
 		// Get the source stream.
 		final StreamsBuilder builder = new StreamsBuilder();
-		KStream<String, String> source = builder.stream("count-streams-input-topic");
+		KStream<String, String> source = builder.stream("reduce-streams-input-topic");
 
 		// Group the source stream by the existing Key.
 		KGroupedStream<String, String> groupedStream = source.groupByKey();
 
-		// Count the number of records for each key.
-		KTable<String, Long> countedTable = groupedStream.count(Materialized.with(Serdes.String(), Serdes.Long()));
+		// Combine the values of all records with the same key into a string separated
+		// by spaces.
+		KTable<String, String> reducedTable = groupedStream.reduce((aggValue, newValue) -> aggValue + " " + newValue);
 
-		countedTable.toStream().to("count-streams-output-topic", Produced.with(Serdes.String(), Serdes.Long()));
+		reducedTable.toStream().to("reduce-streams-output-topic");
 
 		final Topology topology = builder.build();
 		final KafkaStreams streams = new KafkaStreams(topology, props);
