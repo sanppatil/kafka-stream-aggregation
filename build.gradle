@@ -17,6 +17,6 @@ application {
 }
 
 task(runAggregations, dependsOn: 'classes', type: JavaExec) {
-   main = 'com.kafka.stream.AggregationsMain'
+   main = 'com.kafka.stream.Main'
    classpath = sourceSets.main.runtimeClasspath
 }
